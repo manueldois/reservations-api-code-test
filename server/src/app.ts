@@ -19,7 +19,7 @@ export async function createApp() {
         controllersPattern: "**/*.@(ts|js)"
     };
 
-    const apiSpec = path.join(__dirname, './openapi.yaml');
+    const apiSpec = path.join(__dirname, './swagger.yaml');
 
     const exegesisMiddleware = await exegesisExpress.middleware(
         apiSpec,
