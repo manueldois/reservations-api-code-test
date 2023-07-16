@@ -1,6 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '../services/sequelize';
-import Guest from './Guest';
 import Property from './Property';
 
 interface ReservationAttributes {
@@ -37,7 +36,6 @@ Reservation.init(
     }
 );
 
-Reservation.belongsTo(Guest);
 Reservation.belongsTo(Property);
 
 export default Reservation;
