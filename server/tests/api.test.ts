@@ -1,15 +1,20 @@
 import 'dotenv/config'
-import { beforeEach, describe, expect, vi, it } from 'vitest';
+import { beforeEach, describe, expect, vi, it, beforeAll } from 'vitest';
 import { createApp } from '../src/app'
+import { execSync } from 'child_process';
 
-vi.mock('../src/services/sequelize', async () => {
-  const { Sequelize } = await import('sequelize');
-  return { sequelize: new Sequelize('sqlite::memory:', { logging: false }) }
+vi.mock('../src/prisma', async () => {
+  const { PrismaClient } = await import('@prisma/client');
+  return { default: new PrismaClient({ datasources: { db: { url: 'file:./test.db' } } }) }
 })
 
 const app = await createApp()
 
 describe('API tests', () => {
+  beforeAll(() => {
+    // execSync(`DATABASE_URL="file:./test.db" npx prisma db push`);
+  })
+
   beforeEach(async () => {
     vi.resetAllMocks()
   })

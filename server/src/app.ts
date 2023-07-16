@@ -1,12 +1,12 @@
 import 'dotenv/config'
 import express from 'express'
-import { sequelize } from './services/sequelize';
 import path from 'path';
 import * as exegesisExpress from "exegesis-express";
+import prisma from './prisma';
 
 export async function createApp() {
     try {
-        await sequelize.authenticate()
+        await prisma.$connect()
     } catch (error) {
         console.error('Unable to connect to the database:', error);
         process.exit(1)
@@ -21,14 +21,21 @@ export async function createApp() {
 
     const apiSpec = path.join(__dirname, './swagger.yaml');
 
-    const exegesisMiddleware = await exegesisExpress.middleware(
-        apiSpec,
-        options
-    );
+    const user = await prisma.property.findFirst({
+        where: {
+            name: 'Manuel'
+        }
+    })
+    console.log(user)
+
+    // const exegesisMiddleware = await exegesisExpress.middleware(
+    //     apiSpec,
+    //     options
+    // );
 
     const app: express.Application = express();
 
-    app.use(exegesisMiddleware);
+    // app.use(exegesisMiddleware);
 
     app.use(express.json())
 
