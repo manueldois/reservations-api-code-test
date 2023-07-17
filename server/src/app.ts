@@ -3,6 +3,10 @@ import express from 'express'
 import path from 'path';
 import * as exegesisExpress from "exegesis-express";
 import prisma from './prisma';
+import * as pingController from './controllers/ping';
+import * as reservationsController from './controllers/reservations';
+import * as propertiesController from './controllers/properties';
+
 
 export async function createApp() {
     try {
@@ -14,28 +18,29 @@ export async function createApp() {
 
     console.log('Connection to DB has been established successfully.');
 
-    const options = {
-        controllers: path.resolve(__dirname, "./controllers"),
-        controllersPattern: "**/*.@(ts|js)"
-    };
-
     const apiSpec = path.join(__dirname, './swagger.yaml');
 
-    const user = await prisma.property.findFirst({
-        where: {
-            name: 'Manuel'
+    const exegesisMiddleware = await exegesisExpress.middleware(
+        apiSpec,
+        {
+            controllers: {
+                ping: {
+                    ...pingController
+                },
+                reservations: {
+                    ...reservationsController
+                },
+                properties: {
+                    ...propertiesController
+                }
+            },
+            controllersPattern: "**/*.@(ts|js)"
         }
-    })
-    console.log(user)
-
-    // const exegesisMiddleware = await exegesisExpress.middleware(
-    //     apiSpec,
-    //     options
-    // );
+    );
 
     const app: express.Application = express();
 
-    // app.use(exegesisMiddleware);
+    app.use(exegesisMiddleware);
 
     app.use(express.json())
 

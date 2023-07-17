@@ -15,6 +15,19 @@ servers:
         description: path selector
 
 paths:
+  /ping:
+    get:
+      summary: Ping the API
+      operationId: ping
+      x-exegesis-controller: ping
+      responses:
+        "200":
+          description: A greeting for the user.
+          content:
+            text/plain:
+              schema:
+                type: string
+
   /reservations:
     get:
       summary: Get all reservations
@@ -29,6 +42,7 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Reservation"
+    
     post:
       summary: Create a new reservation
       operationId: createReservation
@@ -127,6 +141,7 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Property"
+    
     post:
       summary: Create a new property
       operationId: createProperty
@@ -221,13 +236,10 @@ components:
           format: int64
         startDate:
           type: string
-          format: date
+          format: date-time
         endDate:
           type: string
-          format: date
-        guestId:
-          type: integer
-          format: int64
+          format: date-time
         propertyId:
           type: integer
           format: int64
