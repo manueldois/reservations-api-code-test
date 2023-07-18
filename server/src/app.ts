@@ -1,12 +1,8 @@
 import 'dotenv/config'
 import express from 'express'
 import path from 'path';
-import * as exegesisExpress from "exegesis-express";
+import * as OpenApiValidator from 'express-openapi-validator';
 import prisma from './prisma';
-import * as pingController from './controllers/ping';
-import * as reservationsController from './controllers/reservations';
-import * as propertiesController from './controllers/properties';
-
 
 export async function createApp() {
     try {
@@ -18,33 +14,22 @@ export async function createApp() {
 
     console.log('Connection to DB has been established successfully.');
 
-    const apiSpec = path.join(__dirname, './swagger.yaml');
-
-    const exegesisMiddleware = await exegesisExpress.middleware(
-        apiSpec,
-        {
-            controllers: {
-                ping: {
-                    ...pingController
-                },
-                reservations: {
-                    ...reservationsController
-                },
-                properties: {
-                    ...propertiesController
-                }
-            },
-            controllersPattern: "**/*.@(ts|js)"
-        }
-    );
+    const apiSpec = path.join(__dirname, './openapi.yaml');
 
     const app: express.Application = express();
-
-    app.use(exegesisMiddleware);
 
     app.use(express.json())
 
     app.use('/spec', express.static(apiSpec));
+
+    app.use(
+        OpenApiValidator.middleware({
+            apiSpec,
+            validateRequests: true,
+            validateResponses: true,
+            operationHandlers: path.join(__dirname, './controllers'),
+        }),
+    );
 
     app.use((err, req, res, next) => {
         res.status(err.status || 500).json({

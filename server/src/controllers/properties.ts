@@ -1,54 +1,64 @@
+import { NextFunction, Request, Response } from "express";
+import { Property } from "@prisma/client";
 import prisma from "../prisma";
 
-export const getAllProperties = async () => {
-    return prisma.property.findMany();
+export const getAllProperties = async (req: Request, res: Response) => {
+    return res.json(await prisma.property.findMany())
 }
 
-export const createProperty = async (context) => {
+export const createProperty = async (req: Request, res: Response) => {
     const property = await prisma.property.create({
-        data: context.requestBody,
+        data: req.body,
     });
-    return {
-        statusCode: 201,
-        body: property,
-    };
+
+    return res.status(201).json(property)
 }
 
-export const getPropertyById = async (context) => {
-    const { id } = context.params;
+export const checkPropertyExistsById = async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
     const property = await prisma.property.findUnique({
         where: { id: parseInt(id) },
     });
     if (!property) {
-        return { statusCode: 404 };
+        return res.status(404).end()
     }
-    return {
-        statusCode: 200,
-        body: property,
-    };
+    req['property'] = property
+    next()
 }
 
-export const updatePropertyById = async (context) => {
-    const { id } = context.params;
-    const property = await prisma.property.update({
-        where: { id: parseInt(id) },
-        data: context.requestBody,
-    });
-    if (!property) {
-        return { statusCode: 404 };
+interface RequestWithProperty extends Request {
+    property: Property
+}
+
+export const getPropertyById = [
+    checkPropertyExistsById,
+    async (req: RequestWithProperty, res: Response) => {
+        return res.status(200).json(req.property)
     }
-    return {
-        statusCode: 200,
-        body: property,
-    };
-}
+]
 
-export const deletePropertyById = async (context) => {
-    const { id } = context.params;
-    await prisma.property.delete({
-        where: { id: parseInt(id) },
-    });
-    return { statusCode: 204 };
-}
 
+export const updatePropertyById = [
+    checkPropertyExistsById,
+    async (req: RequestWithProperty, res: Response) => {
+        const { id } = req.property;
+        const updated = await prisma.property.update({
+            where: { id },
+            data: req.body,
+        });
+
+        return res.status(200).json(updated)
+    }
+]
+
+export const deletePropertyById = [
+    checkPropertyExistsById,
+    async (req: RequestWithProperty, res: Response) => {
+        const { id } = req.property;
+        await prisma.property.delete({
+            where: { id },
+        });
+        return res.status(200).end()
+    }
+]
 

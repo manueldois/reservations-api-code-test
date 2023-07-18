@@ -19,7 +19,7 @@ paths:
     get:
       summary: Ping the API
       operationId: ping
-      x-exegesis-controller: ping
+      x-eov-operation-handler: ping
       responses:
         "200":
           description: A greeting for the user.
@@ -32,7 +32,7 @@ paths:
     get:
       summary: Get all reservations
       operationId: getAllReservations
-      x-exegesis-controller: reservations
+      x-eov-operation-handler: reservations
       responses:
         "200":
           description: List of reservations
@@ -46,7 +46,7 @@ paths:
     post:
       summary: Create a new reservation
       operationId: createReservation
-      x-exegesis-controller: reservations
+      x-eov-operation-handler: reservations
       requestBody:
         required: true
         content:
@@ -65,7 +65,7 @@ paths:
     get:
       summary: Get a reservation by ID
       operationId: getReservationById
-      x-exegesis-controller: reservations
+      x-eov-operation-handler: reservations
       parameters:
         - in: path
           name: id
@@ -86,7 +86,7 @@ paths:
     put:
       summary: Update a reservation by ID
       operationId: updateReservationById
-      x-exegesis-controller: reservations
+      x-eov-operation-handler: reservations
       parameters:
         - in: path
           name: id
@@ -113,7 +113,7 @@ paths:
     delete:
       summary: Delete a reservation by ID
       operationId: deleteReservationById
-      x-exegesis-controller: reservations
+      x-eov-operation-handler: reservations
       parameters:
         - in: path
           name: id
@@ -131,7 +131,7 @@ paths:
     get:
       summary: Get all properties
       operationId: getAllProperties
-      x-exegesis-controller: properties
+      x-eov-operation-handler: properties
       responses:
         "200":
           description: List of properties
@@ -145,7 +145,7 @@ paths:
     post:
       summary: Create a new property
       operationId: createProperty
-      x-exegesis-controller: properties
+      x-eov-operation-handler: properties
       requestBody:
         required: true
         content:
@@ -164,7 +164,7 @@ paths:
     get:
       summary: Get a property by ID
       operationId: getPropertyById
-      x-exegesis-controller: properties
+      x-eov-operation-handler: properties
       parameters:
         - in: path
           name: id
@@ -185,7 +185,7 @@ paths:
     put:
       summary: Update a property by ID
       operationId: updatePropertyById
-      x-exegesis-controller: properties
+      x-eov-operation-handler: properties
       parameters:
         - in: path
           name: id
@@ -212,7 +212,7 @@ paths:
     delete:
       summary: Delete a property by ID
       operationId: deletePropertyById
-      x-exegesis-controller: properties
+      x-eov-operation-handler: properties
       parameters:
         - in: path
           name: id

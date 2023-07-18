@@ -1,5 +1,5 @@
-import { ExegesisContext } from "exegesis-express"
+import { Request, Response } from "express";
 
-export const ping = (context: ExegesisContext) => {
-    return 'pong'
+export const ping = (req: Request, res: Response) => {
+    return res.send('pong')
 }

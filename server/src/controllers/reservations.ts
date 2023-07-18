@@ -1,49 +1,63 @@
-import { ExegesisContext } from "exegesis-express";
+import { NextFunction, Request, Response } from "express";
+import { Reservation } from "@prisma/client";
 import prisma from "../prisma";
 
-export const getAllReservations = async () => {
-    return prisma.reservation.findMany({});
+export const getAllReservations = async (req: Request, res: Response) => {
+    return res.json(await prisma.reservation.findMany())
 }
 
-export const createReservation = async (context: ExegesisContext) => {
+export const createReservation = async (req: Request, res: Response) => {
     const reservation = await prisma.reservation.create({
-        data: context.requestBody,
+        data: req.body,
     });
 
-    context.res.status(201).json(reservation)
+    return res.status(201).json(reservation)
 }
 
-export const getReservationById = async (context: ExegesisContext) => {
-    const { id } = context.params.path;
+export const checkReservationExistsById = async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
     const reservation = await prisma.reservation.findUnique({
         where: { id: parseInt(id) },
     });
     if (!reservation) {
-        return context.res.status(404).end()
+        return res.status(404).end()
     }
-    return context.res.status(200).json(reservation)
+    req['reservation'] = reservation
+    next()
 }
 
-export const updateReservationById = async (context: ExegesisContext) => {
-    const { id } = context.params.path;
-    const reservation = await prisma.reservation.update({
-        where: { id: parseInt(id) },
-        data: context.requestBody,
-    });
-    if (!reservation) {
-        return context.res.status(404).end()
-    }
-    return context.res.status(200).json(reservation)
+interface RequestWithReservation extends Request {
+    reservation: Reservation
 }
 
-export const deleteReservationById = async (context: ExegesisContext) => {
-    const { id } = context.params.path;
-    const reservation = await prisma.reservation.delete({
-        where: { id: parseInt(id) },
-    });
-    if (!reservation) {
-        return context.res.status(404).end()
+export const getReservationById = [
+    checkReservationExistsById,
+    async (req: RequestWithReservation, res: Response) => {
+        return res.status(200).json(req.reservation)
     }
-    return context.res.status(200).end()
-}
+]
+
+export const updateReservationById = [
+    checkReservationExistsById,
+    async (req: RequestWithReservation, res: Response) => {
+        const { id } = req.reservation;
+        const updatedReservation = await prisma.reservation.update({
+            where: { id },
+            data: req.body,
+        });
+
+        return res.status(200).json(updatedReservation)
+    }
+]
+
+export const deleteReservationById = [
+    checkReservationExistsById,
+    async (req: RequestWithReservation, res: Response) => {
+        const { id } = req.reservation;
+        await prisma.reservation.delete({
+            where: { id },
+        });
+        return res.status(200).end()
+    }
+]
 
