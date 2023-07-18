@@ -1,16 +1,28 @@
 import 'dotenv/config'
-import { beforeEach, describe, expect, vi, it, beforeAll } from 'vitest';
+import { describe, expect, it, beforeAll, beforeEach } from '@jest/globals';
 import { createApp } from '../src/app'
 import supertest from 'supertest'
 import prisma from '../src/prisma';
-import { Property, Reservation } from '@prisma/client';
+import { Property, Reservation, PrismaClient } from '@prisma/client';
 import { promisify } from 'util';
 
-const exec = promisify((await import('node:child_process')).exec);
+// @ts-ignore
+jest.mock('../src/prisma', () => {
+  // @ts-ignore
+  const { PrismaClient } = jest.requireActual('@prisma/client');
 
-vi.mock('../src/prisma', async () => {
-  const { PrismaClient } = await import('@prisma/client');
-  return { default: new PrismaClient({ datasources: { db: { url: 'file:./test.db' } } }) }
+  const client = new PrismaClient({
+    datasources: {
+      db: {
+        url: 'file:./test.db'
+      }
+    }
+  })
+
+  return {
+    __esModule: true,
+    default: client
+  }
 })
 
 const defaultProperty: Omit<Property, 'id'> = {
@@ -41,6 +53,7 @@ describe('API tests', () => {
   let request: any;
 
   beforeAll(async () => {
+    // const exec = promisify((await import('node:child_process')).exec);
     // exec(`echo y | DATABASE_URL='file:./test.db' npx prisma migrate reset --force`);
     // const { stderr } = await exec(`DATABASE_URL='file:./test.db' npx prisma db push`)
     // if (stderr) {
@@ -55,7 +68,6 @@ describe('API tests', () => {
     await prisma.reservation.deleteMany({})
     await prisma.property.deleteMany({})
     await prisma.$queryRaw`DELETE FROM "sqlite_sequence";`
-    vi.resetAllMocks()
   })
 
   it('Should get all reservations', async () => {
