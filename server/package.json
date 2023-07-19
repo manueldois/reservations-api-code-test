@@ -35,7 +35,8 @@
     "start": "ts-node src/server.ts",
     "migrate:dev": "DATABASE_URL='file:./dev.db' npx prisma migrate dev",
     "migrate:prod": "DATABASE_URL='file:./prod.db' npx prisma migrate deploy",
-    "migrate:test": "DATABASE_URL='file:./test.db' npx prisma migrate dev"
+    "migrate:test": "DATABASE_URL='file:./test.db' npx prisma migrate dev",
+    "migrate": "npm run migrate:dev && npm run migrate:prod && npm run migrate:test"
   },
   "author": "",
   "license": "ISC",
