@@ -18,8 +18,8 @@ model Property {
 
 model Reservation {
   id         Int      @id @default(autoincrement())
-  startDate  DateTime
-  endDate    DateTime
+  startDate  String
+  endDate    String
   property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   propertyId Int
 }

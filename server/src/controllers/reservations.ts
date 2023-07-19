@@ -13,9 +13,7 @@ export const createReservation = asyncHandler(
     async (req: Request, res: Response) => {
         const reservation = await prisma.reservation.create({
             data: {
-                ...req.body,
-                startDate: new Date(req.body.startDate),
-                endDate: new Date(req.body.endDate)
+                ...req.body
             },
         });
 
@@ -58,8 +56,6 @@ export const updateReservationById = [
             where: { id },
             data: {
                 ...req.body,
-                startDate: req.body.startDate ? new Date(req.body.startDate) : undefined,
-                endDate: req.body.endDate ? new Date(req.body.endDate) : undefined
             },
         });
 

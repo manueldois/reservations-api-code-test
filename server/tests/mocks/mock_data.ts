@@ -5,7 +5,7 @@ export const defaultProperty: Omit<Property, 'id'> = {
 }
 
 export const defaultReservation: Omit<Reservation, 'id'> = {
-    startDate: new Date('2023-07-16 00:00:00.000'),
-    endDate: new Date('2023-07-20 00:00:00.000'),
+    startDate: '2023-07-16',
+    endDate: '2023-07-20',
     propertyId: 1,
 }

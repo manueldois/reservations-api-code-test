@@ -67,8 +67,8 @@ describe('Reservations API', () => {
     const reservation = await createReservation()
 
     const reservationUpdate = {
-      startDate: new Date('2023-07-18 00:00:00.000'),
-      endDate: new Date('2023-07-25 00:00:00.000'),
+      startDate: '2023-07-18',
+      endDate: '2023-07-25',
     };
 
     const response = await request.put(`${reservationsURL}/1`).send(reservationUpdate);
