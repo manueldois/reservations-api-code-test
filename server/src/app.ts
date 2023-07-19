@@ -3,6 +3,9 @@ import express from 'express'
 import path from 'path';
 import * as OpenApiValidator from 'express-openapi-validator';
 import prisma from './prisma';
+import swaggerUi from 'swagger-ui-express'
+import YAML from 'yaml'
+import fs from 'fs'
 
 export async function createApp() {
     try {
@@ -15,12 +18,14 @@ export async function createApp() {
     console.log('Connection to DB has been established successfully.');
 
     const apiSpec = path.join(__dirname, './openapi.yaml');
+    const apiSpecFile = fs.readFileSync(apiSpec, 'utf8')
+    const swaggerDocument = YAML.parse(apiSpecFile)
 
     const app: express.Application = express();
 
-    app.use(express.json())
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-    app.use('/spec', express.static(apiSpec));
+    app.use(express.json())
 
     app.use(
         OpenApiValidator.middleware({
