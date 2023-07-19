@@ -9,8 +9,8 @@
 - Docker
 - NodeJS (Typescript)
 - SQLite
-- Redis
-- Vitest
+- Jest
+- OpenAPI docs
 
 ## Usage
 
@@ -20,6 +20,7 @@
 
 Default port `3000`
 
+Swagger ui at http://localhost:3000/api-docs/
 
 ## Dev workflow
 
