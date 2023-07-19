@@ -3,7 +3,6 @@
 
 ## Dev notes
 
-Vitest is used to provide extensive integration test coverage
 
 ## Tech stack
 
@@ -31,8 +30,6 @@ Default port `3000`
 `cd server && npm i && npm run dev:debug`
 
 ## Tests
-
-Testing does NOT require an OpenAI API key
 
 `cd server && npm i && npm run dev:test`
 
