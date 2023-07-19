@@ -1,30 +1,42 @@
 import { NextFunction, Request, Response } from "express";
 import { Reservation } from "@prisma/client";
+import asyncHandler from "express-async-handler"
 import prisma from "../prisma";
 
-export const getAllReservations = async (req: Request, res: Response) => {
-    return res.json(await prisma.reservation.findMany())
-}
-
-export const createReservation = async (req: Request, res: Response) => {
-    const reservation = await prisma.reservation.create({
-        data: req.body,
-    });
-
-    return res.status(201).json(reservation)
-}
-
-export const checkReservationExistsById = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
-    const reservation = await prisma.reservation.findUnique({
-        where: { id: parseInt(id) },
-    });
-    if (!reservation) {
-        return res.status(404).end()
+export const getAllReservations = asyncHandler(
+    async (req: Request, res: Response) => {
+        res.json(await prisma.reservation.findMany())
     }
-    req['reservation'] = reservation
-    next()
-}
+)
+
+export const createReservation = asyncHandler(
+    async (req: Request, res: Response) => {
+        const reservation = await prisma.reservation.create({
+            data: {
+                ...req.body,
+                startDate: new Date(req.body.startDate),
+                endDate: new Date(req.body.endDate)
+            },
+        });
+
+        res.status(201).json(reservation)
+        return
+    }
+)
+
+export const checkReservationExistsById =
+    asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const { id } = req.params;
+        const reservation = await prisma.reservation.findUnique({
+            where: { id: parseInt(id) },
+        });
+        if (!reservation) {
+            res.status(404).end()
+        }
+        req['reservation'] = reservation
+        next()
+    }
+    )
 
 interface RequestWithReservation extends Request {
     reservation: Reservation
@@ -32,32 +44,38 @@ interface RequestWithReservation extends Request {
 
 export const getReservationById = [
     checkReservationExistsById,
-    async (req: RequestWithReservation, res: Response) => {
-        return res.status(200).json(req.reservation)
+    asyncHandler(async (req: RequestWithReservation, res: Response) => {
+        res.status(200).json(req.reservation)
     }
+    )
 ]
 
 export const updateReservationById = [
     checkReservationExistsById,
-    async (req: RequestWithReservation, res: Response) => {
+    asyncHandler(async (req: RequestWithReservation, res: Response) => {
         const { id } = req.reservation;
         const updatedReservation = await prisma.reservation.update({
             where: { id },
-            data: req.body,
+            data: {
+                ...req.body,
+                startDate: req.body.startDate ? new Date(req.body.startDate) : undefined,
+                endDate: req.body.endDate ? new Date(req.body.endDate) : undefined
+            },
         });
 
-        return res.status(200).json(updatedReservation)
+        res.status(200).json(updatedReservation)
     }
+    )
 ]
 
 export const deleteReservationById = [
     checkReservationExistsById,
-    async (req: RequestWithReservation, res: Response) => {
+    asyncHandler(async (req: RequestWithReservation, res: Response) => {
         const { id } = req.reservation;
         await prisma.reservation.delete({
             where: { id },
         });
-        return res.status(200).end()
-    }
+        res.status(200).end()
+    })
 ]
 
