@@ -43,6 +43,18 @@ export const getPropertyById = [
     )
 ]
 
+export const getPropertyReservationsById = [
+    checkPropertyExistsById,
+    asyncHandler(async (req: RequestWithProperty, res: Response) => {
+        const reservations = await prisma.reservation.findMany({
+            where: {
+                propertyId: req.property.id
+            }
+        })
+        res.status(200).json(reservations)
+    }
+    )
+]
 
 export const updatePropertyById = [
     checkPropertyExistsById,

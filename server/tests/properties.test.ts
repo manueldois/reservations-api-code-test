@@ -81,4 +81,14 @@ describe('Properties API', () => {
     const reservation = await prisma.reservation.findFirst({ where: { id: 1 } })
     expect(reservation).toBe(null)
   });
+
+  it('Should get a property\'s reservations', async () => {
+    const property = await createProperty()
+    const reservation1 = await createReservation()
+    const reservation2 = await createReservation()
+
+    const response = await request.get(`${propertiesURL}/1/reservations`);
+    expect(response.status).toEqual(200);
+    expect(response.body).toMatchObject([reservation1, reservation2]);
+  });
 })

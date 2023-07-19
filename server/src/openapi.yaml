@@ -226,6 +226,30 @@ paths:
         "404":
           description: Property not found
 
+  /properties/{id}/reservations:
+    get:
+      summary: Get a property's reservations by ID
+      operationId: getPropertyReservationsById
+      x-eov-operation-handler: properties
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: List of reservations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Reservation"
+        "404":
+          description: Property not found
+
 components:
   schemas:
     Reservation:
